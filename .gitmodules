@@ -1,0 +1,9 @@
+[submodule "Permafrost/deps/spdlog"]
+	path = Permafrost/deps/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "Permafrost/deps/GLFW"]
+	path = Permafrost/deps/GLFW
+	url = https://github.com/glfw/glfw.git
+[submodule "Permafrost/deps/glm"]
+	path = Permafrost/deps/glm
+	url = https://github.com/g-truc/glm.git
