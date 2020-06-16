@@ -1,0 +1,6 @@
+#CMake build tree location
+build
+
+#VSCode clutter
+.vscode
+
