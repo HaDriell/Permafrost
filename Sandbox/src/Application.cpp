@@ -2,27 +2,44 @@
 #include <Permafrost/Core/Delegate.h>
 #include <Permafrost/Core/Log.h>
 
+#include <vector>
 
 class A
 {
 public:
-    void AMethod() { LOG_INFO("Method Called"); }
-    static void Function() { LOG_INFO("Function Called"); }
+    void AMethod() { LOG_INFO("A::AMethod Called"); }
+	void BMethod() { LOG_INFO("A::BMethod Called"); }
+    static void Function() { LOG_INFO("A::Function Called"); }
 };
 
-
+class B
+{
+public:
+	void AMethod() { LOG_INFO("B::AMethod Called"); }
+};
 
 void Initialize(int argc, char* argv[])
 {
-    A object;
+    A a;
+	B b;
 
-    Functor<A> Ftor{ &object, &A::AMethod };
-    Ftor.Call();
+	Delegate<> OnEvent;
+	OnEvent.Bind(&a, &A::AMethod);
+	OnEvent.Bind(&a, &A::BMethod);
+	OnEvent.Bind(&b, &B::AMethod);
+	OnEvent.Bind(&A::Function);
 
-    // Delegate OnEvent;
-    // OnEvent.Bind(&A::Function);
-    // OnEvent.Bind(&object, &A::Method);
-    // OnEvent.Broadcast();
+	OnEvent.Broadcast();
+
+	LOG_INFO("*** Unbinding A::Function");
+	OnEvent.Unbind(&A::Function);
+
+	OnEvent.Broadcast();
+
+	LOG_INFO("*** Unbinding a->BMethod");
+	OnEvent.Unbind(&a, &A::BMethod);
+
+	OnEvent.Broadcast();
 }
 
 void Main()

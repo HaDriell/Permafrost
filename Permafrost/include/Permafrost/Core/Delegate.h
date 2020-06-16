@@ -1,37 +1,40 @@
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <functional>
-#include <memory>
 #include <map>
-#include <tuple>
+#include <memory>
+#include <vector>
 
-
-using FunctionID = std::tuple<uint64_t, uint64_t>;
-
-#define TYPENAME_0_ARG
-#define TYPENAME_1_ARG  TYPENAME_0_ARG    typename T1
-#define TYPENAME_2_ARG  TYPENAME_1_ARG  , typename T2
-
-#define PROTOTYPE_0_ARG
-#define PROTOTYPE_1_ARG PROTOTYPE_0_ARG   T1 Arg1
-#define PROTOTYPE_2_ARG PROTOTYPE_1_ARG , T2 Arg2
-
-#define ARGUMENTS_0_ARG
-#define ARGUMENTS_1_ARG ARGUMENTS_0_ARG Arg1
-#define ARGUMENTS_2_ARG ARGUMENTS_1_ARG Arg2
+template<typename TPointer>
+std::uintptr_t GetPointerAddress(TPointer Ptr)
+{
+	std::uintptr_t* AddressPtr = reinterpret_cast<std::uintptr_t*>(&Ptr);
+	return *AddressPtr;
+}
 
 template<typename... Args>
-class Callback { public: virtual void Call(Args... Arguments) = 0; };
+class Callback
+{
+public:
+	virtual void Call(Args... Arguments) = 0;
+	virtual bool IsTargetting(std::uintptr_t InstanceAddress, std::uintptr_t FunctionAddress) const = 0;
+};
 
 template<class TClass, typename... Args>
-struct Functor : public Callback<Args...>
+struct MethodCallback : public Callback<Args...>
 {
-    void Call(Args... Arguments) override { (Instance->*Method)(Arguments...); }
+	void Call(Args... Arguments) override { (Instance->*Method)(Arguments...); }
+	bool IsTargetting(std::uintptr_t InstanceAddress, std::uintptr_t FunctionAddress) const override
+	{
+		return InstanceAddress == GetPointerAddress(Instance)
+			&& FunctionAddress == GetPointerAddress(Method);
+	}
 
-    Functor(TClass* Instance, void(TClass::* Method)(Args...))
-    : Instance(Instance)
-    , Method(Method)
+	MethodCallback(TClass* Instance, void(TClass::* Method)(Args...))
+		: Instance(Instance)
+		, Method(Method)
     {}
 
 private:
@@ -39,93 +42,88 @@ private:
     void(TClass::* Method)(Args...);
 };
 
-/*
-struct Delegate0
+template<typename... Args>
+struct FunctionCallback : public Callback<Args...>
 {
-    template<class TClass>
-    void Bind(TClass* Instance, void (TClass::*Method) ( PROTOTYPE_0_ARG ))
-    {
-        FunctionID ID( (uint64_t) &Instance, (uint64_t) &Method );
-        auto Pointer = std::bind(Method, Instance, std::placeholders::_1);
-        Callbacks.insert({ ID,  Pointer });
-    }
+	void Call(Args... Arguments) override { (*Function)(Arguments...); }
+	bool IsTargetting(std::uintptr_t InstanceAddress, std::uintptr_t FunctionAddress) const override
+	{
+		return InstanceAddress == 0 
+			&& FunctionAddress == GetPointerAddress(Function);
+	}
 
-    void Bind(void (*FunctionPtr) ( PROTOTYPE_0_ARG ))
-    {
-        FunctionID              ID      = FunctionID(0, reinterpret_cast<uint64_t>(FunctionPtr));
-        std::function<void( PROTOTYPE_0_ARG )> Pointer(Function);
-        Callbacks.insert({ ID, Pointer });
-    }
-
-    void Broadcast() const
-    {
-        for (auto& Pair : Callbacks)
-        {
-            Pair.second();
-        }
-    }
+	FunctionCallback(void(*Function)(Args...))
+		: Function(Function)
+	{}
 
 private:
-    std::map<FunctionID, std::function<void()>> Callbacks;
+	void (*Function)(Args...);
 };
-//*/
 
-/*
-template<typename ... Args>
+template<typename... Args>
 struct Delegate
 {
-    using FSignature    = std::tuple<uint64_t, uint64_t>;
-
-    template<class TClass>
-    using TMethodPtr    = void(TClass::*)(Args...);
-    using TFunctionPtr  = void(*)(Args...);
+	using CallbackImpl = Callback<Args...>;
+	template<class TClass>
+	using MethodCallbackImpl = MethodCallback<TClass, Args...>;
+	using FunctionCallbackImpl = FunctionCallback<Args...>;
+	
 
     /// Bind Method to Delegate
     template<class TClass>
-    void Bind(TClass* Instance, TMethodPtr<TClass> MethodPtr)
+    void Bind(TClass* Instance, void (TClass::* Method)(Args...))
     {
-        FSignature Signature    = { (uint64_t) &Instance, (uint64_t) &MethodPtr };
-        std::function<void(Args...)> Callback = std::bind(MethodPtr, Instance, std::placeholders::_1);
-        Callbacks.insert({ Signature, Callback });
+        Callbacks.push_back(new MethodCallbackImpl<TClass>(Instance, Method));
     }
 
     /// Unbind Method from Delegate
     template<class TClass>
-    void Unbind(TClass* Instance, TMethodPtr<TClass> MethodPtr)
+    void Unbind(TClass* Instance, void (TClass::*Method)(Args...))
     {
-        FSignature Signature    = { (uint64_t) &Instance, (uint64_t) &MethodPtr };
-        Callbacks.erase(Signature);
+		UnbindInternal(GetPointerAddress(Instance), GetPointerAddress(Method));
     }
 
     /// Bind Function to Delegate
-    void Bind(TFunctionPtr FunctionPtr)
+    void Bind(void(*Function)(Args...))
     {
-        FSignature Signature    = { 0, (uint64_t) &FunctionPtr };
-        std::function<void(Args...)> Callback = &FunctionPtr;
-        Callbacks.insert({ Signature, Callback });
+		Callbacks.push_back(new FunctionCallbackImpl(Function));
     }
 
     /// Unbind Function from Delegate
-    void Unbind(TFunctionPtr FunctionPtr)
+    void Unbind(void(*Function)(Args...))
     {
-        FSignature Signature    = { 0, (uint64_t) &FunctionPtr };
-        Callbacks.erase(Signature);
+		UnbindInternal(0, GetPointerAddress(Function));
     }
 
-    void Broadcast(Args ... Arguments) const
+
+    void Broadcast(Args... Arguments) const
     {
         for (auto& Pair : Callbacks)
         {
-            Pair.second(Arguments...);
+			Pair->Call(Arguments...);
         }
     }
-
-    Delegate() = default;
 private:
-    //Delegate(const Delegate&) = delete;
-    //Delegate& operator=(const Delegate&) = delete;
+	void UnbindInternal(std::uintptr_t InstanceAddress, std::uintptr_t FunctionAddress)
+	{
+		for (auto It = Callbacks.begin(); It != Callbacks.end(); ++It)
+		{
+			if ((*It)->IsTargetting(InstanceAddress, FunctionAddress))
+			{
+				Callbacks.erase(It);
+				break;
+			}
+		}
+		return;
+	}
 
-    std::map<FSignature, std::function<void(Args...)>> Callbacks;
+public:
+    Delegate() = default;
+
+private:
+	//Disable Delegate Copy, Copy ctor
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+	std::vector<CallbackImpl*> Callbacks;
 };
-
-//*/
