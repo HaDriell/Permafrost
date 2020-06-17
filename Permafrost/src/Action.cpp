@@ -1,5 +1,4 @@
 #include "Permafrost/Core/Action.h"
-#include "Permafrost/Core/Log.h"
 
 void Action::Activate()
 {
