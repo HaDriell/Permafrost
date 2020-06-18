@@ -117,13 +117,6 @@ private:
 		return;
 	}
 
-public:
-    Delegate() = default;
-
 private:
-	//Disable Delegate Copy, Copy ctor
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-
 	std::vector<CallbackImpl*> Callbacks;
 };

@@ -3,6 +3,10 @@
 #include <Permafrost/Core/Log.h>
 
 #include <Permafrost/Core/ActionMap.h>
+#include <Permafrost/Graphics/Window.h>
+#include <Permafrost/Graphics/GraphicsModule.h>
+
+#include <iostream>
 
 void Initialize(int argc, char* argv[])
 {
@@ -13,4 +17,7 @@ void Initialize(int argc, char* argv[])
 
 void Main()
 {
+	std::shared_ptr<Window> Window;
+	GraphicsModule::Get()->Open(Window);
+	std::cin.get();
 }

@@ -2,31 +2,23 @@
 
 #include <memory>
 
-template<typename T>
+template<class T>
 class Module
 {
     friend T;
-
     Module() = default;
     ~Module() = default;
     Module(const Module&) = delete;
     Module& operator=(const Module&) = delete;
 
 public:
-    static std::unique_ptr<T> Get();
-
-private:
-    static std::unique_ptr<T> Instance;
+    static std::unique_ptr<T>& Get();
 };
-
 
 /// Get (Lazy instanciation) the Required Module
 template<typename T>
-std::unique_ptr<T> Module<T>::Get()
+std::unique_ptr<T>& Module<T>::Get()
 {
-    if (!Module<T>::Instance)
-    {
-        Module<T>::Instance.reset(new T());
-    }
-    return Module<T>::Instance;
+    static std::unique_ptr<T> ModuleInstance(new T());
+    return ModuleInstance;
 }
