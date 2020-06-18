@@ -4,7 +4,6 @@
 #include "Permafrost/Core/Application.h"
 #include "Permafrost/Core/Log.h"
 
-
 int main(int argc, char* argv[])
 {
     LOG_INFO("*** Initializing Permafrost");

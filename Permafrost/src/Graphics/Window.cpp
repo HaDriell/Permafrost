@@ -3,16 +3,96 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Permafrost/Graphics/GraphicsModule.h"
+#include "Permafrost/Core/Log.h"
+#include "Permafrost/Graphics/WindowEventLoop.h"
 
-bool Window::IsOpen() const
+
+Window::Window()
+    : Opened(false)
+    , Handle(nullptr)
+{}
+
+
+Window::~Window()
 {
-    return Handle != nullptr;
+    CloseImpl();
 }
 
-bool Window::ShouldClose() const
+void Window::Open()
 {
-    return glfwWindowShouldClose(Handle);
+    Opened = true;
+    WindowEventLoop::Get().Register(this);
+    WindowEventLoop::Get().WakeUp();
+}
+
+void Window::Close()
+{
+    Opened = false;
+    WindowEventLoop::Get().Unregister(this);
+    WindowEventLoop::Get().WakeUp();
+}
+
+
+void Window::BeginFrame()
+{
+    if (Handle == nullptr) return;
+    glfwMakeContextCurrent(Handle);
+}
+
+void Window::EndFrame()
+{
+    if (Handle == nullptr) return;
+    glfwSwapBuffers(Handle);
+}
+
+void Window::OpenImpl()
+{
+    if (!Opened || Handle != nullptr)
+        return;
+
+    glfwDefaultWindowHints();
+    //OpenGL Context Settings
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, Properties.GLVersionMajor);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, Properties.GLVersionMinor);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, Properties.GLCoreProfile ? GLFW_OPENGL_CORE_PROFILE : GLFW_OPENGL_COMPAT_PROFILE);
+    //Window Setup
+    glfwWindowHint(GLFW_DECORATED, Properties.Decorated ? GLFW_TRUE : GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, Properties.Resizeable ? GLFW_TRUE : GLFW_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+    Handle = glfwCreateWindow(Properties.Width, Properties.Height, Properties.Title.c_str(), nullptr, nullptr);
+    glfwSetWindowUserPointer(Handle, this); // Two way Binding
+
+    glfwMakeContextCurrent(Handle);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress); // TODO : find a better way to load than a bulk load each time we Create a Window
+    glfwSwapInterval(Properties.VSync ? GLFW_TRUE : GLFW_FALSE);
+    
+    LOG_INFO("OpenGL Context Info \n"
+    "\tVendor   : {0}"      "\tRenderer : {1}"        "\tVersion  : {2}",
+    glGetString(GL_VENDOR), glGetString(GL_RENDERER), glGetString(GL_VERSION));
+
+    int MonitorXOffset, MonitorYOffset;
+    GLFWmonitor* PrimaryMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* CurrentVideoMode = glfwGetVideoMode(PrimaryMonitor);
+    glfwGetMonitorPos(PrimaryMonitor, &MonitorXOffset, &MonitorYOffset);
+
+    int WindowXOffset = MonitorXOffset + (CurrentVideoMode->width - Properties.Width) / 2;
+    int WindowYOffset = MonitorYOffset + (CurrentVideoMode->height - Properties.Height) / 2;
+    glfwSetWindowPos(Handle, WindowXOffset, WindowYOffset);
+
+    //TODO : Setup Window Callbacks
+
+    glfwShowWindow(Handle);
+}
+
+void Window::CloseImpl()
+{
+    if (Opened || Handle == nullptr)
+        return;
+    
+    glfwDestroyWindow(Handle);
+    Handle = nullptr;
+    Opened = false;
 }
 
 /*

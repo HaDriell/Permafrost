@@ -22,23 +22,26 @@ class GLFWwindow;
 
 class Window
 {
-    friend class GraphicsModule;
+    friend class WindowEventLoop;
 public:
-    Window() : Handle(nullptr) {}
+    Window();
+    ~Window();
 
+    void Open();
+    void Close();
 
+    void BeginFrame();
+    void EndFrame();
 
-public:
-    bool IsOpen() const;
-    bool ShouldClose() const;
 private:
-
-
+    void OpenImpl();
+    void CloseImpl();
 
 public:
     WindowProperties    Properties;
     Delegate<>          OnRender;
     UserInput           Input;
 private:
-    GLFWwindow*         Handle { nullptr };
+    bool                Opened;
+    GLFWwindow*         Handle;
 };
