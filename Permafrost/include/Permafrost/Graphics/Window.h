@@ -30,10 +30,9 @@ public:
     void Open();
     void Close();
 
-    void BeginFrame();
-    void EndFrame();
 
 private:
+    void RenderImpl();
     void OpenImpl();
     void CloseImpl();
 

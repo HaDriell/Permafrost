@@ -33,15 +33,13 @@ void Window::Close()
 }
 
 
-void Window::BeginFrame()
+void Window::RenderImpl()
 {
-    if (Handle == nullptr) return;
-    glfwMakeContextCurrent(Handle);
-}
+    if (Handle == nullptr)
+        return;
 
-void Window::EndFrame()
-{
-    if (Handle == nullptr) return;
+    glfwMakeContextCurrent(Handle);
+    OnRender.Broadcast();
     glfwSwapBuffers(Handle);
 }
 

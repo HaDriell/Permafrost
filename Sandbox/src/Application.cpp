@@ -15,18 +15,17 @@ void Initialize(int argc, char* argv[])
 	Actions.GetAction("Test")->Activate();
 }
 
+void OnMainWindowRender()
+{
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void Main()
 {
 	Window window;
-	window.Open();
+	window.OnRender.Bind(&OnMainWindowRender);
 
-	while(true)
-	{
-		window.BeginFrame();
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		window.EndFrame();
-	}
-	window.Close();
+	window.Open();
 	WindowEventLoop::Get().Wait();
 }

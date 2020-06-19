@@ -70,7 +70,7 @@ void WindowEventLoop::EventLoopMain()
         LOG_INFO("Starting Event Loop");
         while (IsAnyWindowOpen())
         {
-            glfwWaitEvents();
+            glfwPollEvents();
             UpdateManagedWindows();
         }
 
@@ -114,6 +114,15 @@ void WindowEventLoop::UpdateManagedWindows()
         if (Window->Opened && Window->Handle == nullptr)
         {
             Window->OpenImpl();
+        }
+
+        //Render Windows
+        Window->RenderImpl();
+        
+        //Auto Detect Closing Requests
+        if (glfwWindowShouldClose(Window->Handle))
+        {
+            Window->Opened = false;
         }
 
         //Detect Close Request
