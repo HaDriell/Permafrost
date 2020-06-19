@@ -6,6 +6,11 @@
 
 #include "Permafrost/Core/Log.h"
 
+void OnGLFWErrorCallback(int error, const char* description)
+{
+    LOG_ERROR("[GLFW Error] {0}", description);
+}
+
 static WindowEventLoop EventLoop;
 
 WindowEventLoop& WindowEventLoop::Get()
@@ -13,75 +18,23 @@ WindowEventLoop& WindowEventLoop::Get()
     return EventLoop;
 }
 
-void WindowEventLoop::Register(Window* WindowPtr)
+void WindowEventLoop::Register(std::shared_ptr<Window> WindowPtr)
 {
     ManagedWindowsAccess.lock();
     ManagedWindows.push_back(WindowPtr);
     ManagedWindowsAccess.unlock();
 }
 
-void WindowEventLoop::Unregister(Window* WindowPtr)
+void WindowEventLoop::ExecuteMainLoop()
 {
-    ManagedWindowsAccess.lock();
-    auto It = std::find(ManagedWindows.begin(), ManagedWindows.end(), WindowPtr);
-
-    if (It != ManagedWindows.end())
-    {
-        ManagedWindows.erase(It);
-
-        if (WindowPtr->Handle != nullptr)
-        {
-            glfwDestroyWindow(WindowPtr->Handle);
-            WindowPtr->Handle = nullptr;
-            WindowPtr->Opened = false;
-        }
-    }
-
-    ManagedWindowsAccess.unlock();
-}
-
-void WindowEventLoop::WakeUp()
-{
-    GraphicsThreadAccess.lock();
-    if (GraphicsThread.joinable())
-    {
-        glfwPostEmptyEvent();
-    }
-    else
-    {
-        GraphicsThread = std::thread(&WindowEventLoop::EventLoopMain, this);
-    }
-    GraphicsThreadAccess.unlock();
-}
-
-void WindowEventLoop::Wait()
-{
-    if (GraphicsThread.joinable())
-    {
-        GraphicsThread.join();
-    }
-}
-
-void WindowEventLoop::EventLoopMain()
-{
-    LOG_INFO("Initializing Event Loop");
+    LOG_INFO("Entering Event Loop");
     if (glfwInit())
     {
-        LOG_INFO("Starting Event Loop");
-        while (IsAnyWindowOpen())
-        {
+        glfwSetErrorCallback(&OnGLFWErrorCallback);
+        do {
             glfwPollEvents();
             UpdateManagedWindows();
-        }
-
-        LOG_INFO("Terminating Event Loop");
-        //GLFW Dangling Pointer
-        ManagedWindowsAccess.lock();
-        for (auto* Window : ManagedWindows)
-        {
-            Window->Handle = nullptr;
-        }
-        ManagedWindowsAccess.unlock();
+        } while (IsAnyWindowOpen());
         glfwTerminate();
     }
     LOG_INFO("Exiting Event Loop");
@@ -92,9 +45,9 @@ bool WindowEventLoop::IsAnyWindowOpen()
     bool AnyWindowOpen = false;
 
     ManagedWindowsAccess.lock();
-    for (auto* Window : ManagedWindows)
+    for (auto Window : ManagedWindows)
     {
-        if (Window->Opened)
+        if (Window->Handle != nullptr)
         {
             AnyWindowOpen = true; 
             break;
@@ -107,28 +60,37 @@ bool WindowEventLoop::IsAnyWindowOpen()
 
 void WindowEventLoop::UpdateManagedWindows()
 {
+    std::vector<std::shared_ptr<Window>> ClosedWindows;
+
     ManagedWindowsAccess.lock();
-    for (auto* Window : ManagedWindows)
+    for (auto Window : ManagedWindows)
     {
-        //Detect Opening Request
-        if (Window->Opened && Window->Handle == nullptr)
+        //Open new Windows
+        if (Window->Handle == nullptr)
         {
             Window->OpenImpl();
         }
 
-        //Render Windows
-        Window->RenderImpl();
-        
-        //Auto Detect Closing Requests
-        if (glfwWindowShouldClose(Window->Handle))
+        //Render Opened Windows
+        else if (Window->Handle != nullptr)
         {
-            Window->Opened = false;
+            Window->RenderImpl();
         }
 
-        //Detect Close Request
-        if (!Window->Opened && Window->Handle != nullptr)
+        //Remove Closing Windows
+        if (glfwWindowShouldClose(Window->Handle))
         {
             Window->CloseImpl();
+            ClosedWindows.push_back(Window);
+        }
+    }
+
+    for (auto Window : ClosedWindows)
+    {
+        auto It = std::find(ManagedWindows.begin(), ManagedWindows.end(), Window);
+        if (It != ManagedWindows.end())
+        {
+            ManagedWindows.erase(It);
         }
     }
     ManagedWindowsAccess.unlock();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "Permafrost/Core/UserInput.h"
@@ -7,11 +8,11 @@
 struct WindowProperties
 {
     std::string Title           = "Window";
-    uint8_t     GLVersionMajor  = 4;
-    uint8_t     GLVersionMinor  = 5;
+    int         GLVersionMajor  = 4;
+    int         GLVersionMinor  = 5;
     bool        GLCoreProfile   = false;
-    uint32_t    Width           = 1280;
-    uint32_t    Height          = 720;
+    int         Width           = 1280;
+    int         Height          = 720;
     bool        Decorated       = true;
     bool        Resizeable      = true;
     bool        Fullscreen      = false;
@@ -24,12 +25,9 @@ class Window
 {
     friend class WindowEventLoop;
 public:
-    Window();
-    ~Window();
+    static std::shared_ptr<Window> Open(const WindowProperties& Properties = WindowProperties());
 
-    void Open();
     void Close();
-
 
 private:
     void RenderImpl();
@@ -37,10 +35,9 @@ private:
     void CloseImpl();
 
 public:
-    WindowProperties    Properties;
-    Delegate<>          OnRender;
-    UserInput           Input;
+    WindowProperties        Properties;
+    Delegate<>              OnRender;
+    UserInput               Input;
 private:
-    bool                Opened;
-    GLFWwindow*         Handle;
+    GLFWwindow*             Handle{ nullptr };
 };

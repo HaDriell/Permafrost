@@ -11,25 +11,16 @@ class WindowEventLoop
 {
 public:
     static WindowEventLoop& Get();
-
 public:
-    void Register(Window* WindowPtr);
-    void Unregister(Window* WindowPtr);
-    void WakeUp();
-    void Wait();
+    void Register(std::shared_ptr<Window> WindowPtr);
 
+    void ExecuteMainLoop();
 private:
-
-    void EventLoopMain();
     bool IsAnyWindowOpen();
     void UpdateManagedWindows();
 
 private:
-    //Event loop Worker
-    std::mutex                  GraphicsThreadAccess;
-    std::thread                 GraphicsThread;
-
     //List of Managed Windows
-    std::mutex                  ManagedWindowsAccess;
-    std::vector<Window*>        ManagedWindows;
+    std::mutex           ManagedWindowsAccess;
+    std::vector<std::shared_ptr<Window>> ManagedWindows;
 };

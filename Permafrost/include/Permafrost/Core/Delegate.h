@@ -98,9 +98,9 @@ struct Delegate
 
     void Broadcast(Args... Arguments) const
     {
-        for (auto& Pair : Callbacks)
+        for (auto& Callback : Callbacks)
         {
-			Pair->Call(Arguments...);
+			Callback->Call(Arguments...);
         }
     }
 private:

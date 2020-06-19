@@ -13,6 +13,7 @@ file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 #Permafrost Binary & Links
 add_library(Permafrost STATIC ${HEADERS} ${SOURCES})
+set_property(TARGET Permafrost PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 target_link_libraries(Permafrost Glad glfw ${GLFW_LIBRARIES} spdlog glm)
 
 #Permafrost PUBLIC API

@@ -15,7 +15,13 @@ void Initialize(int argc, char* argv[])
 	Actions.GetAction("Test")->Activate();
 }
 
-void OnMainWindowRender()
+void DrawRedFrame()
+{
+	glClearColor(1, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void DrawBlackFrame()
 {
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -23,9 +29,11 @@ void OnMainWindowRender()
 
 void Main()
 {
-	Window window;
-	window.OnRender.Bind(&OnMainWindowRender);
+	auto Red = Window::Open(); 
+	Red->OnRender.Bind(&DrawRedFrame);
 
-	window.Open();
-	WindowEventLoop::Get().Wait();
+	auto Black = Window::Open();
+	Black->OnRender.Bind(&DrawBlackFrame);	
+	
+    WindowEventLoop::Get().ExecuteMainLoop();
 }

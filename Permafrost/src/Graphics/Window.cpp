@@ -7,31 +7,18 @@
 #include "Permafrost/Graphics/WindowEventLoop.h"
 
 
-Window::Window()
-    : Opened(false)
-    , Handle(nullptr)
-{}
-
-
-Window::~Window()
+std::shared_ptr<Window> Window::Open(const WindowProperties& Properties)
 {
-    CloseImpl();
-}
-
-void Window::Open()
-{
-    Opened = true;
-    WindowEventLoop::Get().Register(this);
-    WindowEventLoop::Get().WakeUp();
+    std::shared_ptr<Window> WindowPtr = std::make_shared<Window>();
+    WindowPtr->Properties = Properties;
+    WindowEventLoop::Get().Register(WindowPtr);
+    return WindowPtr;
 }
 
 void Window::Close()
 {
-    Opened = false;
-    WindowEventLoop::Get().Unregister(this);
-    WindowEventLoop::Get().WakeUp();
+    glfwSetWindowShouldClose(Handle, GLFW_TRUE);
 }
-
 
 void Window::RenderImpl()
 {
@@ -45,7 +32,7 @@ void Window::RenderImpl()
 
 void Window::OpenImpl()
 {
-    if (!Opened || Handle != nullptr)
+    if (Handle != nullptr)
         return;
 
     glfwDefaultWindowHints();
@@ -56,9 +43,16 @@ void Window::OpenImpl()
     //Window Setup
     glfwWindowHint(GLFW_DECORATED, Properties.Decorated ? GLFW_TRUE : GLFW_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, Properties.Resizeable ? GLFW_TRUE : GLFW_FALSE);
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    //glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     Handle = glfwCreateWindow(Properties.Width, Properties.Height, Properties.Title.c_str(), nullptr, nullptr);
+
+    if (Handle == nullptr)
+    {
+        LOG_ERROR("Failed to open Window.");
+        return;
+    }
+
     glfwSetWindowUserPointer(Handle, this); // Two way Binding
 
     glfwMakeContextCurrent(Handle);
@@ -85,12 +79,11 @@ void Window::OpenImpl()
 
 void Window::CloseImpl()
 {
-    if (Opened || Handle == nullptr)
+    if (Handle == nullptr)
         return;
     
     glfwDestroyWindow(Handle);
     Handle = nullptr;
-    Opened = false;
 }
 
 /*
