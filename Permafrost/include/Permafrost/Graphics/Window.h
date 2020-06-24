@@ -11,6 +11,7 @@ struct WindowProperties
     int         GLVersionMajor  = 4;
     int         GLVersionMinor  = 5;
     bool        GLCoreProfile   = false;
+    bool        GLDebug         = true;
     int         Width           = 1280;
     int         Height          = 720;
     bool        Decorated       = true;

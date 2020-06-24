@@ -6,6 +6,50 @@
 #include "Permafrost/Core/Log.h"
 #include "Permafrost/Graphics/WindowEventLoop.h"
 
+static void APIENTRY OnOpenGLDebugMessage(GLenum Source, GLenum Type, unsigned int id, GLenum Severity, GLsizei Length, const char* Message, const void* UserParam)
+{
+    // ignore non-significant error/warning codes
+    // if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
+
+    const char* SourceString;
+    const char* TypeString;
+    const char* SeverityString;
+
+    switch (Source)
+    {
+        case GL_DEBUG_SOURCE_API:             SourceString = "API";             break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   SourceString = "Window System";   break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: SourceString = "Shader Compiler"; break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     SourceString = "Third Party";     break;
+        case GL_DEBUG_SOURCE_APPLICATION:     SourceString = "Application";     break;
+        case GL_DEBUG_SOURCE_OTHER:           SourceString = "Other";           break;
+    }
+
+    switch (Type)
+    {
+        case GL_DEBUG_TYPE_ERROR:               TypeString = "Error";                   break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: TypeString = "Deprecated Behaviour";    break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  TypeString = "Undefined Behaviour";     break; 
+        case GL_DEBUG_TYPE_PORTABILITY:         TypeString = "Portability";             break;
+        case GL_DEBUG_TYPE_PERFORMANCE:         TypeString = "Performance";             break;
+        case GL_DEBUG_TYPE_MARKER:              TypeString = "Marker";                  break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:          TypeString = "Push Group";              break;
+        case GL_DEBUG_TYPE_POP_GROUP:           TypeString = "Pop Group";               break;
+        case GL_DEBUG_TYPE_OTHER:               TypeString = "Other";                   break;
+    }
+    
+    switch (Severity)
+    {
+        case GL_DEBUG_SEVERITY_HIGH:         SeverityString = "High";           break;
+        case GL_DEBUG_SEVERITY_MEDIUM:       SeverityString = "Medium";         break;
+        case GL_DEBUG_SEVERITY_LOW:          SeverityString = "Low";            break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: SeverityString = "Notification";   break;
+    }
+    LOG_DEBUG("GL(Source:{0} Type:{1} Severity:{2}) : {3}",
+        SourceString, TypeString, SeverityString, std::string(Message, Length)
+    );
+}
+
 
 std::shared_ptr<Window> Window::Open(const WindowProperties& Properties)
 {
@@ -37,6 +81,7 @@ void Window::OpenImpl()
 
     glfwDefaultWindowHints();
     //OpenGL Context Settings
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, Properties.GLDebug ? GLFW_TRUE : GLFW_FALSE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, Properties.GLVersionMajor);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, Properties.GLVersionMinor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, Properties.GLCoreProfile ? GLFW_OPENGL_CORE_PROFILE : GLFW_OPENGL_COMPAT_PROFILE);
@@ -58,6 +103,7 @@ void Window::OpenImpl()
     glfwMakeContextCurrent(Handle);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress); // TODO : find a better way to load than a bulk load each time we Create a Window
     glfwSwapInterval(Properties.VSync ? GLFW_TRUE : GLFW_FALSE);
+    glDebugMessageCallback(&OnOpenGLDebugMessage, nullptr);
     
     LOG_INFO("OpenGL Context Info \n"
     "\tVendor   : {0}"      "\tRenderer : {1}"        "\tVersion  : {2}",

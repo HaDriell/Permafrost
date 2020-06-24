@@ -9,18 +9,22 @@
 #include "Permafrost/Graphics/Shader.h"
 #include "Permafrost/Graphics/Texture2D.h"
 #include "Permafrost/Graphics/VertexArray.h"
+#include "Permafrost/Graphics/RenderOptions.h"
 
 struct Vertex2D
 {
     glm::vec4   Position;
-    glm::vec3   Color;
+    glm::vec4   Color;
     glm::vec2   UV;
     float       TextureID;
 };
 
+
 class Renderer
 {
 public:
+    Renderer();
+    ~Renderer();
 
     void Begin(unsigned int BatchQuadCapacity = 10000);
     void Flush();
@@ -37,18 +41,19 @@ public:
 private:
 
     //TODO : Replace with MACROS and enable only on Debug
-    inline void AssertCurrent() const { assert(CurrentThread == std::this_thread::get_id()); }
+    inline void AssertRenderThread() const { assert(RenderThread == std::this_thread::get_id()); }
     inline void AssertDrawing() const { assert(Drawing); }
     inline void AssertNotDrawing() const { assert(!Drawing); }
 
 private:
-    std::thread::id CurrentThread;
+    std::thread::id         RenderThread;
 
-    bool                            Drawing = false;
-    std::vector<glm::mat4>          TransformationStack;
-    std::vector<Vertex2D>           Vertices;
+    bool                    Drawing;
+    std::vector<glm::mat4>  TransformationStack;
+    std::vector<Vertex2D>   Vertices;
 
-    std::unique_ptr<Shader>         BatchShader;
-    std::unique_ptr<VertexArray>    BatchVertexArray;
-    std::shared_ptr<VertexBuffer>   BatchVertexBuffer;
+    RenderOptions           BatchRenderOptions;
+    Shader                  BatchShader;
+    VertexArray             BatchVertexArray;
+    VertexBuffer            BatchVertexBuffer;
 };

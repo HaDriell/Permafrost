@@ -31,7 +31,7 @@ void VertexBuffer::Bind() const
 void VertexBuffer::UpdateData(const void* Data, unsigned int Size)
 {
     glBindBuffer(GL_ARRAY_BUFFER, Handle);
-    glBufferData(GL_ARRAY_BUFFER, Size, Data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, Size, Data, GL_STREAM_DRAW);
 }
 
 unsigned int GetGLType(VertexAttributeType Type)

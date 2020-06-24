@@ -20,12 +20,12 @@ void VertexArray::Bind() const
     glBindVertexArray(Handle);
 }
 
-void VertexArray::Attach(const std::shared_ptr<VertexBuffer>& VertexBuffer)
+void VertexArray::Attach(VertexBuffer* VertexBuffer)
 {
     AttachedBuffers.push_back(VertexBuffer);
 }
 
-void VertexArray::Detach(const std::shared_ptr<VertexBuffer>& VertexBuffer)
+void VertexArray::Detach(VertexBuffer* VertexBuffer)
 {
     auto It = std::find(AttachedBuffers.begin(), AttachedBuffers.end(), VertexBuffer);
     if (It != AttachedBuffers.end())
@@ -44,6 +44,8 @@ void VertexArray::ComputeLayout()
     int VertexAttributeIndex = 0;
     for (auto Buffer : AttachedBuffers)
     {
+        Buffer->Bind();
+
         //Compute Stride for this Buffer Layout
         unsigned int Stride = 0;
         for (auto VertexAttribute : Buffer->GetLayout())

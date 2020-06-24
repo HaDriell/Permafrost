@@ -47,36 +47,52 @@ static const std::string Renderer_FragmentShaderSource = R"(
 )";
 
 
+Renderer::Renderer()
+{
+    RenderThread    = std::this_thread::get_id();
+    Drawing         = false;
+
+    //Setup RenderOptions
+    BatchRenderOptions.Blending = true;
+    BatchRenderOptions.SrcBlendingFactor = BlendingFactor::SrcAlpha;
+    BatchRenderOptions.DstBlendingFactor = BlendingFactor::OneMinusSrcAlpha;
+    BatchRenderOptions.BlendingMode = BlendingMode::Add;
+
+    BatchRenderOptions.FaceCulling = false;
+
+    //Setup Shader
+    ShaderSources Sources;
+    Sources[ShaderType::Vertex]     = Renderer_VertexShaderSource;
+    Sources[ShaderType::Fragment]   = Renderer_FragmentShaderSource;
+    BatchShader.Compile(Sources);
+    BatchShader.Debug();
+
+    //Setup Vertex Buffer
+    std::vector<VertexAttribute> Vertex2DLayout;
+    Vertex2DLayout.push_back(VertexAttribute(VertexAttributeType::Float4, "Position"));
+    Vertex2DLayout.push_back(VertexAttribute(VertexAttributeType::Float4, "Color"));
+    Vertex2DLayout.push_back(VertexAttribute(VertexAttributeType::Float2, "UV"));
+    Vertex2DLayout.push_back(VertexAttribute(VertexAttributeType::Float, "TextureID"));
+    BatchVertexBuffer.SetLayout(Vertex2DLayout);
+
+    //Setup Vertex Array
+    BatchVertexArray.Attach(&BatchVertexBuffer);
+    BatchVertexArray.ComputeLayout();
+}
+
+Renderer::~Renderer()
+{
+    AssertRenderThread();
+    AssertNotDrawing();
+
+}
+
+
 void Renderer::Begin(unsigned int BatchQuadCapacity)
 {
+    AssertRenderThread();
     AssertNotDrawing();
     Drawing = true;
-    CurrentThread = std::this_thread::get_id();
-
-    //Lazy Shader Initialization
-    if (!BatchShader)
-    {
-        LOG_INFO("Initializing BatchShader");
-        BatchShader.reset(new Shader());
-
-        ShaderSources Sources;
-        Sources[ShaderType::Vertex]     = Renderer_VertexShaderSource;
-        Sources[ShaderType::Fragment]   = Renderer_FragmentShaderSource;
-
-        BatchShader->Compile(Sources);
-        BatchShader->Debug();
-    }
-
-    if (!BatchVertexArray)
-    {
-        BatchVertexArray.reset(new VertexArray());
-    }
-    
-    if (!BatchVertexBuffer)
-    {
-        BatchVertexBuffer.reset(new VertexBuffer());
-        BatchVertexArray->Attach(BatchVertexBuffer);
-    }
 
     //Prepare Vertex Batch
     Vertices.clear();
@@ -84,33 +100,33 @@ void Renderer::Begin(unsigned int BatchQuadCapacity)
 
     //Prepare Transformation Stack
     TransformationStack.clear();
-    TransformationStack.push_back(glm::mat4());
+    TransformationStack.push_back(glm::mat4(1.0f));
 }
 
 void Renderer::Flush()
 {
-    AssertCurrent();
+    AssertRenderThread();
     AssertDrawing();
 
     if (!Vertices.empty())
     {
+        unsigned int VertexCount = Vertices.size(); 
         //Upload & Reset Vertices
-        BatchVertexBuffer->Bind();
-        BatchVertexBuffer->Update(Vertices);
+        BatchVertexBuffer.Bind();
+        BatchVertexBuffer.Update(Vertices);
+        Vertices.clear();
 
         //Execute Draw Call
-        BatchVertexArray->Bind();
-        BatchShader->Bind();
-        glDrawArrays(GL_TRIANGLES, 0, Vertices.size());
-
-        //Reset Batch
-        Vertices.clear();
+        BatchRenderOptions.Apply();
+        BatchVertexArray.Bind();
+        BatchShader.Bind();
+        glDrawArrays(GL_TRIANGLES, 0, VertexCount);
     }
 }
 
 void Renderer::End()
 {
-    AssertCurrent();
+    AssertRenderThread();
     AssertDrawing();
     Flush();
     Drawing = false;
@@ -118,22 +134,22 @@ void Renderer::End()
 
 void Renderer::Push(const glm::mat4& Transform, bool Absolute)
 {
-    AssertCurrent();
+    AssertRenderThread();
     AssertDrawing();
 
     if (Absolute)
     {
-        TransformationStack.push_back(Transform);
+        TransformationStack.push_back(TransformationStack.back() * Transform);
     }
     else
     {
-        TransformationStack.push_back(GetTransform() * Transform);
+        TransformationStack.push_back(TransformationStack.front() * Transform);
     }
 }
 
 void Renderer::Pop()
 {
-    AssertCurrent();
+    AssertRenderThread();
     AssertDrawing();
 
     if (TransformationStack.size() > 1)
@@ -145,11 +161,15 @@ void Renderer::Pop()
 
 void Renderer::Draw(IDrawable* Drawable)
 {
+    AssertRenderThread();
+    AssertDrawing();
     Drawable->Draw(this);
 }
 
 void Renderer::DrawRect(float X, float Y, float With, float Height, const glm::vec4& Color)
 {
+    AssertRenderThread();
+    AssertDrawing();
     if (Vertices.size() + 6 >= Vertices.capacity())
     {
         Flush();
@@ -184,7 +204,7 @@ void Renderer::DrawRect(float X, float Y, float With, float Height, const glm::v
     Vertices.push_back(Vertex1);
     Vertices.push_back(Vertex2);
     //Push Triangle 2
+    Vertices.push_back(Vertex0);
     Vertices.push_back(Vertex2);
     Vertices.push_back(Vertex3);
-    Vertices.push_back(Vertex0);
 }
