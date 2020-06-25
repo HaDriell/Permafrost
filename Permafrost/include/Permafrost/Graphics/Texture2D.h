@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Permafrost/Core/CommonTypes.h"
+
 enum class TextureWrap
 {
     Repeat,
@@ -123,11 +125,11 @@ enum class TextureDataType
     UNSIGNED_INT_2_10_10_10_REV
 };
 
-unsigned int GLTextureFilter(TextureFilter TextureFilter);
-unsigned int GLTextureWrap(TextureWrap Wrap);
-unsigned int GLTextureInternalFormat(TextureInternalFormat Format);
-unsigned int GLTextureFormat(TextureFormat Format);
-unsigned int GLTextureDataType(TextureDataType DataType);
+u32 GLTextureFilter(TextureFilter TextureFilter);
+u32 GLTextureWrap(TextureWrap Wrap);
+u32 GLTextureInternalFormat(TextureInternalFormat Format);
+u32 GLTextureFormat(TextureFormat Format);
+u32 GLTextureDataType(TextureDataType DataType);
 
 struct Texture2DProperties
 {
@@ -144,11 +146,11 @@ public:
     ~Texture2D();
 
 public:
-    void Update(TextureInternalFormat InternalFormat, TextureFormat Format, TextureDataType DataType, const unsigned char* Data, unsigned int Width, unsigned int Height);
-    void Bind(unsigned int Slot) const;
+    void Update(TextureInternalFormat InternalFormat, TextureFormat Format, TextureDataType DataType, const u8* Data, u32 Width, u32 Height);
+    void Bind(u32 Slot) const;
 
 private:
-    unsigned int Handle;
-    unsigned int Width;
-    unsigned int Height;
+    u32 Handle;
+    u32 Width;
+    u32 Height;
 };

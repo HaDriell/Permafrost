@@ -8,12 +8,12 @@
 struct WindowProperties
 {
     std::string Title           = "Window";
-    int         GLVersionMajor  = 4;
-    int         GLVersionMinor  = 5;
+    i32         GLVersionMajor  = 4;
+    i32         GLVersionMinor  = 5;
     bool        GLCoreProfile   = false;
     bool        GLDebug         = true;
-    int         Width           = 1280;
-    int         Height          = 720;
+    i32         Width           = 1280;
+    i32         Height          = 720;
     bool        Decorated       = true;
     bool        Resizeable      = true;
     bool        Fullscreen      = false;

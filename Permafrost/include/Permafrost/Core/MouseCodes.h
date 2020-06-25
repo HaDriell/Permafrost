@@ -1,9 +1,9 @@
 #pragma once
 
-#include <cstdint>
+#include "Permafrost/Core/CommonTypes.h"
 
 
-enum class MouseCode : uint16_t
+enum class MouseCode : u16
 {
     // From glfw3.h
     Button0                = 0,

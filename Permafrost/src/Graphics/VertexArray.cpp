@@ -36,24 +36,24 @@ void VertexArray::Detach(VertexBuffer* VertexBuffer)
 
 void VertexArray::ComputeLayout()
 {
-    int MaxVertexAttributes = 16; // This is the minimum supported amount for OpenGL compliance
+    i32 MaxVertexAttributes = 16; // This is the minimum supported amount for OpenGL compliance
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MaxVertexAttributes);
 
     glBindVertexArray(Handle);
 
-    int VertexAttributeIndex = 0;
+    i32 VertexAttributeIndex = 0;
     for (auto Buffer : AttachedBuffers)
     {
         Buffer->Bind();
 
         //Compute Stride for this Buffer Layout
-        unsigned int Stride = 0;
+        u32 Stride = 0;
         for (auto VertexAttribute : Buffer->GetLayout())
         {
             Stride += GetSizeOf(VertexAttribute.Type);
         }
 
-        unsigned int Offset = 0;
+        std::uintptr_t Offset = 0;
         for (auto VertexAttribute : Buffer->GetLayout())
         {
             //Check for Vertex Attribute limit
@@ -79,7 +79,7 @@ void VertexArray::ComputeLayout()
     }
 
     //Force disabling unused Attribute Indices
-    for (int UnusedVertexAttributeIndex = VertexAttributeIndex; UnusedVertexAttributeIndex < MaxVertexAttributes; UnusedVertexAttributeIndex++)
+    for (i32 UnusedVertexAttributeIndex = VertexAttributeIndex; UnusedVertexAttributeIndex < MaxVertexAttributes; UnusedVertexAttributeIndex++)
     {
         glDisableVertexAttribArray(UnusedVertexAttributeIndex);
     }

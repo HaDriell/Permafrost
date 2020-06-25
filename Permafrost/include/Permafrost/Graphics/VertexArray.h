@@ -1,7 +1,6 @@
 #pragma once
 
-#include <vector>
-
+#include "Permafrost/Core/CommonTypes.h"
 #include "Permafrost/Graphics/Buffer.h"
 
 class VertexArray
@@ -17,6 +16,6 @@ public:
     void Detach(VertexBuffer* VertexBuffer);
 
 private:
-    unsigned int                Handle;
+    u32                         Handle;
     std::vector<VertexBuffer*>  AttachedBuffers;
 };

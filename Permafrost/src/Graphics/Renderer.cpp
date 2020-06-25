@@ -84,11 +84,10 @@ Renderer::~Renderer()
 {
     AssertRenderThread();
     AssertNotDrawing();
-
 }
 
 
-void Renderer::Begin(unsigned int BatchQuadCapacity)
+void Renderer::Begin(u32 BatchQuadCapacity)
 {
     AssertRenderThread();
     AssertNotDrawing();
@@ -110,7 +109,7 @@ void Renderer::Flush()
 
     if (!Vertices.empty())
     {
-        unsigned int VertexCount = Vertices.size(); 
+        u32 VertexCount = Vertices.size(); 
         //Upload & Reset Vertices
         BatchVertexBuffer.Bind();
         BatchVertexBuffer.Update(Vertices);
@@ -166,7 +165,7 @@ void Renderer::Draw(IDrawable* Drawable)
     Drawable->Draw(this);
 }
 
-void Renderer::DrawRect(float X, float Y, float With, float Height, const glm::vec4& Color)
+void Renderer::DrawRect(f32 X, f32 Y, f32 With, f32 Height, const glm::vec4& Color)
 {
     AssertRenderThread();
     AssertDrawing();

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <memory>
 #include <thread>
 
+#include "Permafrost/Core/CommonTypes.h"
 #include "Permafrost/Graphics/Buffer.h"
 #include "Permafrost/Graphics/Drawable.h"
 #include "Permafrost/Graphics/Shader.h"
@@ -16,7 +16,7 @@ struct Vertex2D
     glm::vec4   Position;
     glm::vec4   Color;
     glm::vec2   UV;
-    float       TextureID;
+    f32         TextureID;
 };
 
 
@@ -26,7 +26,7 @@ public:
     Renderer();
     ~Renderer();
 
-    void Begin(unsigned int BatchQuadCapacity = 10000);
+    void Begin(u32 BatchQuadCapacity = 10000);
     void Flush();
     void End();
 
@@ -34,13 +34,13 @@ public:
     void Pop();
 
     void Draw(IDrawable* Drawable);
-    void DrawRect(float X, float Y, float With, float Height, const glm::vec4& Color = glm::vec4(1));
+    void DrawRect(f32 X, f32 Y, f32 With, f32 Height, const glm::vec4& Color = glm::vec4(1));
 
     inline const glm::mat4& GetTransform() const { return TransformationStack.front(); }
 
 private:
 
-    //TODO : Replace with MACROS and enable only on Debug
+    //TODO : Replace with MACROS in sources and enable only on Debug
     inline void AssertRenderThread() const { assert(RenderThread == std::this_thread::get_id()); }
     inline void AssertDrawing() const { assert(Drawing); }
     inline void AssertNotDrawing() const { assert(!Drawing); }

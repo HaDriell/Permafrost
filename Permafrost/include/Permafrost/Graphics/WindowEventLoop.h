@@ -1,10 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <mutex>
 #include <thread>
-#include <vector>
 
+#include "Permafrost/Core/CommonTypes.h"
 #include "Permafrost/Graphics/Window.h"
 
 class WindowEventLoop
@@ -12,7 +11,7 @@ class WindowEventLoop
 public:
     static WindowEventLoop& Get();
 public:
-    void Register(std::shared_ptr<Window> WindowPtr);
+    void Register(Ref<Window> WindowPtr);
 
     void ExecuteMainLoop();
 private:
@@ -21,6 +20,6 @@ private:
 
 private:
     //List of Managed Windows
-    std::mutex           ManagedWindowsAccess;
-    std::vector<std::shared_ptr<Window>> ManagedWindows;
+    std::mutex                  ManagedWindowsAccess;
+    std::vector<Ref<Window>>    ManagedWindows;
 };

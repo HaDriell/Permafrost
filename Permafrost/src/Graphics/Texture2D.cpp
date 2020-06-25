@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-unsigned int GLTextureFilter(TextureFilter Filter)
+u32 GLTextureFilter(TextureFilter Filter)
 {
     switch (Filter)
     {
@@ -16,7 +16,7 @@ unsigned int GLTextureFilter(TextureFilter Filter)
     return GL_FALSE;
 }
 
-unsigned int GLTextureWrap(TextureWrap Wrap)
+u32 GLTextureWrap(TextureWrap Wrap)
 {
     switch (Wrap)
     {
@@ -28,7 +28,7 @@ unsigned int GLTextureWrap(TextureWrap Wrap)
     return GL_FALSE;
 }
 
-unsigned int GLTextureInternalFormat(TextureInternalFormat Format)
+u32 GLTextureInternalFormat(TextureInternalFormat Format)
 {
     switch (Format)
     {
@@ -95,7 +95,7 @@ unsigned int GLTextureInternalFormat(TextureInternalFormat Format)
     return GL_FALSE;
 }
 
-unsigned int GLTextureFormat(TextureFormat Format)
+u32 GLTextureFormat(TextureFormat Format)
 {
     switch (Format)
     {
@@ -118,7 +118,7 @@ unsigned int GLTextureFormat(TextureFormat Format)
     return GL_FALSE;
 }
 
-unsigned int GLTextureDataType(TextureDataType Type)
+u32 GLTextureDataType(TextureDataType Type)
 {
     switch (Type)
     {
@@ -157,7 +157,7 @@ Texture2D::~Texture2D()
     glDeleteTextures(1, &Handle);
 }
 
-void Texture2D::Update(TextureInternalFormat InternalFormat, TextureFormat Format, TextureDataType DataType, const unsigned char* Data, unsigned int Width, unsigned int Height)
+void Texture2D::Update(TextureInternalFormat InternalFormat, TextureFormat Format, TextureDataType DataType, const unsigned char* Data, u32 Width, u32 Height)
 {
     GLenum GLInternalFormat = GLTextureInternalFormat(InternalFormat);
     GLenum GLFormat         = GLTextureFormat(Format);
@@ -166,7 +166,7 @@ void Texture2D::Update(TextureInternalFormat InternalFormat, TextureFormat Forma
     glTexImage2D(GL_TEXTURE_2D, 0, GLInternalFormat, Width, Height, 0, GLFormat, GLDataType, Data);
 }
 
-void Texture2D::Bind(unsigned int Slot) const
+void Texture2D::Bind(u32 Slot) const
 {
     glActiveTexture(GL_TEXTURE0 + Slot);
     glBindTexture(GL_TEXTURE_2D, Handle);

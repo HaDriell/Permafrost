@@ -5,7 +5,7 @@
 
 #include "Permafrost/Core/Log.h"
 
-unsigned int GLShaderType(ShaderType ShaderType)
+u32 GLShaderType(ShaderType ShaderType)
 {
     switch (ShaderType)
     {
@@ -149,14 +149,14 @@ bool Shader::Compile(const ShaderSources& ShaderSources)
     Valid    = false;
 
     //Compile each shader
-    std::vector<unsigned int> Shaders;
+    std::vector<u32> Shaders;
     for (auto& ShaderSource : ShaderSources)
     {
-        unsigned int ShaderType = GLShaderType(ShaderSource.first);
-        const GLchar* Source    = ShaderSource.second.c_str();
+        u32 ShaderType = GLShaderType(ShaderSource.first);
+        const GLchar* Source = ShaderSource.second.c_str();
 
         //Create Shader
-        unsigned int Shader     = glCreateShader(ShaderType);
+        u32 Shader = glCreateShader(ShaderType);
         Shaders.push_back(Shader);
 
         //Compile Shader
@@ -194,9 +194,9 @@ bool Shader::Compile(const ShaderSources& ShaderSources)
     if (Compiled)
     {
         //Attach shaders to program
-        for (unsigned int shader : Shaders)
+        for (u32 Shader : Shaders)
         {
-            glAttachShader(Handle, shader);
+            glAttachShader(Handle, Shader);
         }
 
         //Link Program
@@ -215,9 +215,9 @@ bool Shader::Compile(const ShaderSources& ShaderSources)
         }
 
         //Detatch shaders from program
-        for (unsigned int shader : Shaders)
+        for (u32 Shader : Shaders)
         {
-            glDetachShader(Handle, shader);
+            glDetachShader(Handle, Shader);
         }
     }
 
@@ -246,7 +246,7 @@ bool Shader::Compile(const ShaderSources& ShaderSources)
         //Fetch Uniforms
         GLint UniformCount;
         glGetProgramiv(Handle, GL_ACTIVE_UNIFORMS, &UniformCount);
-        for (int Index = 0; Index < UniformCount; Index++)
+        for (i32 Index = 0; Index < UniformCount; Index++)
         {
             //Read active uniform data
             GLchar  Name[256];
@@ -267,7 +267,7 @@ bool Shader::Compile(const ShaderSources& ShaderSources)
         //Fetch Attributes
         GLint AttributeCount;
         glGetProgramiv(Handle, GL_ACTIVE_ATTRIBUTES, &AttributeCount);
-        for (int Index = 0; Index < AttributeCount; Index++)
+        for (i32 Index = 0; Index < AttributeCount; Index++)
         {
             //Read active attribute data
             GLchar  Name[256];
@@ -286,7 +286,7 @@ bool Shader::Compile(const ShaderSources& ShaderSources)
     }
     
     //Delete shaders
-    for (unsigned int Shader : Shaders)
+    for (u32 Shader : Shaders)
     {
         glDeleteShader(Shader);
     }
@@ -300,7 +300,7 @@ void Shader::Bind() const
 }
 
 
-void Shader::SetUniform(const std::string& Name, int Value)
+void Shader::SetUniform(const std::string& Name, i32 Value)
 {
     auto Uniform = ShaderUniforms.find(Name);
     if (Uniform == ShaderUniforms.end())
@@ -308,12 +308,12 @@ void Shader::SetUniform(const std::string& Name, int Value)
         LOG_WARNING("Uniform {0} doesn't exist or is inactive.", Name);
         return;
     }
-    unsigned int Location = Uniform->second.Location;
+    u32 Location = Uniform->second.Location;
     
     glUniform1i(Location, Value);
 }
 
-void Shader::SetUniform(const std::string& Name, float Value)
+void Shader::SetUniform(const std::string& Name, f32 Value)
 {
     auto uniform = ShaderUniforms.find(Name);
     if (uniform == ShaderUniforms.end())
@@ -321,7 +321,7 @@ void Shader::SetUniform(const std::string& Name, float Value)
         LOG_WARNING("Uniform {0} doesn't exist or is inactive.", Name);
         return;
     }
-    unsigned int Location = uniform->second.Location;
+    u32 Location = uniform->second.Location;
 
     glUniform1f(Location, Value);
 }
@@ -334,7 +334,7 @@ void Shader::SetUniform(const std::string& Name, const glm::vec2& Value)
         LOG_WARNING("Uniform {0} doesn't exist or is inactive.", Name);
         return;
     }
-    unsigned int Location = uniform->second.Location;
+    u32 Location = uniform->second.Location;
 
     glUniform2f(Location, Value.x, Value.y);
 }
@@ -347,7 +347,7 @@ void Shader::SetUniform(const std::string& Name, const glm::vec3& Value)
         LOG_WARNING("Uniform {0} doesn't exist or is inactive.", Name);
         return;
     }
-    unsigned int Location = uniform->second.Location;
+    u32 Location = uniform->second.Location;
 
     glUniform3f(Location, Value.x, Value.y, Value.z);
 }
@@ -360,7 +360,8 @@ void Shader::SetUniform(const std::string& Name, const glm::vec4& Value)
         LOG_WARNING("Uniform {0} doesn't exist or is inactive.", Name);
         return;
     }
-    unsigned int Location = uniform->second.Location;
+    u32 Location = uniform->second.Location;
+
     glUniform4f(Location, Value.x, Value.y, Value.z, Value.w);
 }
 
@@ -372,7 +373,7 @@ void Shader::SetUniform(const std::string& Name, const glm::mat3& Value)
         LOG_WARNING("Uniform {0} doesn't exist or is inactive.", Name);
         return;
     }
-    unsigned int Location = uniform->second.Location;
+    u32 Location = uniform->second.Location;
 
     glUniformMatrix3fv(Location, 1, GL_FALSE, &Value[0][0]);
 }
@@ -385,6 +386,6 @@ void Shader::SetUniform(const std::string& Name, const glm::mat4& Value)
         LOG_WARNING("Uniform {0} doesn't exist or is inactive.", Name);
         return;
     }
-    unsigned int Location = uniform->second.Location;
+    u32 Location = uniform->second.Location;
     glUniformMatrix4fv(Location, 1, GL_FALSE, &Value[0][0]);
 }

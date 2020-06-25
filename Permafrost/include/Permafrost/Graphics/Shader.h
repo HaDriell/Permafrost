@@ -1,9 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <string>
-#include <unordered_map>
 
+#include "Permafrost/Core/CommonTypes.h"
 
 enum ShaderType
 {
@@ -14,25 +13,25 @@ enum ShaderType
     Compute
 };
 
-unsigned int GLShaderType(ShaderType ShaderType);
+u32 GLShaderType(ShaderType ShaderType);
 
 /// Represents a single uniform in the program
 struct ShaderUniform
 {
-    std::string     Name;
-    unsigned int    Index;
-    unsigned int    Location;
-    unsigned int    Size;
-    unsigned int    Type;
+    std::string Name;
+    u32         Index;
+    u32         Location;
+    u32         Size;
+    u32         Type;
 };
 
 /// Represents a single attribute in the vertex shader
 struct ShaderAttribute
 {
     std::string     Name;
-    unsigned int    Index;
-    unsigned int    Size;
-    unsigned int    Type;
+    u32             Index;
+    u32             Size;
+    u32             Type;
 };
 
 using ShaderSources         = std::unordered_map<ShaderType, std::string>;
@@ -64,8 +63,8 @@ public:
     inline const std::string&           GetValidationLog() const { return ValidationLog; }
 
 
-    void SetUniform(const std::string& Name, int                Value);
-    void SetUniform(const std::string& Name, float              Value);
+    void SetUniform(const std::string& Name, i32                Value);
+    void SetUniform(const std::string& Name, f32                Value);
     void SetUniform(const std::string& Name, const glm::vec2&   Value);
     void SetUniform(const std::string& Name, const glm::vec3&   Value);
     void SetUniform(const std::string& Name, const glm::vec4&   Value);
@@ -73,7 +72,7 @@ public:
     void SetUniform(const std::string& Name, const glm::mat4&   Value);
 
 private:
-    unsigned int            Handle;
+    u32                     Handle;
 
     //Shader Metadata
     ShaderCompilationLogs   CompilationLog;

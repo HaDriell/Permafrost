@@ -6,7 +6,7 @@
 #include "Permafrost/Core/Log.h"
 #include "Permafrost/Graphics/WindowEventLoop.h"
 
-static void APIENTRY OnOpenGLDebugMessage(GLenum Source, GLenum Type, unsigned int id, GLenum Severity, GLsizei Length, const char* Message, const void* UserParam)
+static void APIENTRY OnOpenGLDebugMessage(GLenum Source, GLenum Type, u32 id, GLenum Severity, GLsizei Length, const char* Message, const void* UserParam)
 {
     // ignore non-significant error/warning codes
     // if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
@@ -109,13 +109,13 @@ void Window::OpenImpl()
     "\tVendor   : {0}"      "\tRenderer : {1}"        "\tVersion  : {2}",
     glGetString(GL_VENDOR), glGetString(GL_RENDERER), glGetString(GL_VERSION));
 
-    int MonitorXOffset, MonitorYOffset;
+    i32 MonitorXOffset, MonitorYOffset;
     GLFWmonitor* PrimaryMonitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* CurrentVideoMode = glfwGetVideoMode(PrimaryMonitor);
     glfwGetMonitorPos(PrimaryMonitor, &MonitorXOffset, &MonitorYOffset);
 
-    int WindowXOffset = MonitorXOffset + (CurrentVideoMode->width - Properties.Width) / 2;
-    int WindowYOffset = MonitorYOffset + (CurrentVideoMode->height - Properties.Height) / 2;
+    i32 WindowXOffset = MonitorXOffset + (CurrentVideoMode->width - Properties.Width) / 2;
+    i32 WindowYOffset = MonitorYOffset + (CurrentVideoMode->height - Properties.Height) / 2;
     glfwSetWindowPos(Handle, WindowXOffset, WindowYOffset);
 
     //TODO : Setup Window Callbacks

@@ -28,13 +28,13 @@ void VertexBuffer::Bind() const
     glBindBuffer(GL_ARRAY_BUFFER, Handle);
 }
 
-void VertexBuffer::UpdateData(const void* Data, unsigned int Size)
+void VertexBuffer::UpdateData(const void* Data, u32 Size)
 {
     glBindBuffer(GL_ARRAY_BUFFER, Handle);
     glBufferData(GL_ARRAY_BUFFER, Size, Data, GL_STREAM_DRAW);
 }
 
-unsigned int GetGLType(VertexAttributeType Type)
+u32 GetGLType(VertexAttributeType Type)
 {   
     switch (Type)
     {
@@ -54,7 +54,7 @@ unsigned int GetGLType(VertexAttributeType Type)
 }
 
 
-unsigned int GetSizeOf(VertexAttributeType Type)
+u32 GetSizeOf(VertexAttributeType Type)
 {
     switch (Type)
     {
@@ -76,7 +76,7 @@ unsigned int GetSizeOf(VertexAttributeType Type)
     return 0;
 }
 
-unsigned int GetComponentCount(VertexAttributeType Type)
+u32 GetComponentCount(VertexAttributeType Type)
 {
     switch (Type)
     {

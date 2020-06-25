@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "Permafrost/Core/CommonTypes.h"
 
 enum class VertexAttributeType
 {
@@ -29,27 +28,27 @@ public:
 
     void Bind() const;
 
+    void SetLayout(const std::vector<VertexAttribute>& Layout) { this->Layout = Layout; }
+    inline const std::vector<VertexAttribute>& GetLayout() const { return Layout; }
+    inline u32 GetSize() const { return Size; }
+
     template<typename T>
     void Update(const std::vector<T>& DataBuffer)
     {
-        const void*     Data = DataBuffer.data();
-        unsigned int    Size = DataBuffer.size() * sizeof(T);
+        const void* Data = DataBuffer.data();
+        u32 Size = DataBuffer.size() * sizeof(T);
         UpdateData(Data, Size);
     }
 
-    void SetLayout(const std::vector<VertexAttribute>& Layout) { this->Layout = Layout; }
-    inline const std::vector<VertexAttribute>& GetLayout() const { return Layout; }
-    inline unsigned int GetSize() const { return Size; }
+private:
+    void UpdateData(const void* Data, u32 Size);
 
 private:
-    void UpdateData(const void* Data, unsigned int Size);
-
-private:
-    unsigned int                    Handle;
-    unsigned int                    Size;
+    u32                             Handle;
+    u32                             Size;
     std::vector<VertexAttribute>    Layout;
 };
 
-unsigned int GetGLType(VertexAttributeType Type);
-unsigned int GetSizeOf(VertexAttributeType Type);
-unsigned int GetComponentCount(VertexAttributeType Type);
+u32 GetGLType(VertexAttributeType Type);
+u32 GetSizeOf(VertexAttributeType Type);
+u32 GetComponentCount(VertexAttributeType Type);

@@ -8,7 +8,7 @@
 
 void OnGLFWErrorCallback(int error, const char* description)
 {
-    LOG_ERROR("[GLFW Error] {0}", description);
+    LOG_ERROR("[GLFW Error {0}] {1}", error, description);
 }
 
 static WindowEventLoop EventLoop;

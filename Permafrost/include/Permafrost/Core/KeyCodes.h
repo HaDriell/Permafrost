@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdint>
+#include "Permafrost/Core/CommonTypes.h"
 
-enum class KeyCode : uint16_t
+enum class KeyCode : u16
 {
     // From glfw3.h
     Space               = 32,

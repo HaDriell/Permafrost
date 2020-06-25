@@ -1,9 +1,7 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-
 #include "Permafrost/Core/Action.h"
+#include "Permafrost/Core/CommonTypes.h"
 #include "Permafrost/Core/Delegate.h"
 
 class ActionMap
