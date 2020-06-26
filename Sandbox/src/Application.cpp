@@ -4,9 +4,23 @@
 #include <Permafrost/Graphics/Renderer.h>
 #include <Permafrost/Graphics/Window.h>
 #include <Permafrost/Graphics/WindowEventLoop.h>
+#include <Permafrost/Core/Reflection.h>
 
 #include <glad/glad.h>
 #include <memory>
+
+class Base { ENABLE_REFLECTION(Base); };
+IMPLEMENT_REFLECTION(Base);
+
+class Child : public Base { ENABLE_REFLECTION(Child); }
+IMPLEMENT_CHILD_REFLECTION(Child, Base);
+
+
+
+
+
+
+
 
 static std::unique_ptr<Renderer> s_Renderer;
 

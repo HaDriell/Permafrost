@@ -1,4 +1,5 @@
 #pragma once
+#include <type_traits>
 
 #include "Permafrost/Core/CommonTypes.h"
 
@@ -11,3 +12,10 @@ inline constexpr u32 Hash_FNV1a(u8 Byte, u32 Hash = FNV_Seed)
 }
 
 u32 Hash_FNV1a(const void* Data, u32 Size, u32 Hash = FNV_Seed);
+
+
+template<typename T, class U = typename std::enable_if_t<std::is_pointer<T>::value>>
+u32 Hash_FNV1a(const T& Data, u32 Hash = FNV_Seed)
+{
+    return Hash_FNV1a((const void*) Data, sizeof(T), Hash);
+}
