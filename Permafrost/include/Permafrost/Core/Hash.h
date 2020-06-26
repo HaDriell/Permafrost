@@ -19,3 +19,4 @@ u32 Hash_FNV1a(const T& Data, u32 Hash = FNV_Seed)
 {
     return Hash_FNV1a((const void*) Data, sizeof(T), Hash);
 }
+
