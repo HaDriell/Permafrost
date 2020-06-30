@@ -6,10 +6,10 @@
 #include "Permafrost/Core/CommonTypes.h"
 #include "Permafrost/Graphics/Buffer.h"
 #include "Permafrost/Graphics/Drawable.h"
+#include "Permafrost/Graphics/RenderOptions.h"
 #include "Permafrost/Graphics/Shader.h"
 #include "Permafrost/Graphics/Texture2D.h"
 #include "Permafrost/Graphics/VertexArray.h"
-#include "Permafrost/Graphics/RenderOptions.h"
 
 struct Vertex2D
 {
