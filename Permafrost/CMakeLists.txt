@@ -16,6 +16,10 @@ add_library(Permafrost STATIC ${HEADERS} ${SOURCES})
 set_property(TARGET Permafrost PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 target_link_libraries(Permafrost Glad glfw ${GLFW_LIBRARIES} spdlog glm)
 
+if(WIN32)
+    target_link_libraries(Permafrost ws2_32)
+endif()
+
 #Permafrost PUBLIC API
 target_include_directories(Permafrost PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
