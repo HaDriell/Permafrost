@@ -18,4 +18,8 @@ mkdir ${BuildPath}
 
 #Generate out-of-source Build Tree for MSYS2
 cd ${BuildPath}
-cmake -DCMAKE_BUILD_TYPE=${BuildType} -G "Ninja" ${WorkspacePath}
+
+export CC=gcc
+export CXX=g++
+
+cmake -DWIN32=1 -DCMAKE_BUILD_TYPE=${BuildType} -G "Ninja" ${WorkspacePath}
