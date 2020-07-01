@@ -9,14 +9,7 @@
 #include <Permafrost/Graphics/WindowEventLoop.h>
 #include <Permafrost/Core/Reflection/Reflection.h>
 
-class Base { REFLECT(Base); };
-class Child : public Base { REFLECT(Child); };
-
-REFLECT_IMPL(Base);
-REFLECT_IMPL_CHILD(Child, Base);
-
-
-void Initialize(int argc, char** argv)
+void Configure(int argc, char** argv)
 {
 	LOG_INFO("ARG[0] = {0}", argv[0]);
 	spdlog::set_level(spdlog::level::level_enum::debug);
@@ -40,7 +33,7 @@ void OnWindowRender()
 	RenderUtil::SetClearColor(0, 0, 0, 1);
 	RenderUtil::Clear();
 
-	RenderUtil::Get()->Begin();
+	RenderUtil::Get()->Begin(glm::mat4(1));
 	RenderUtil::Get()->DrawRect(-0.5f, -0.5f, 1, 1);
 	RenderUtil::Get()->End();
 }

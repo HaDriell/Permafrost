@@ -12,5 +12,5 @@ BuildPath=${WorkspacePath}/${BuildFolder}
 #Invoke Make if Build Folder exists
 if [ -d ${BuildPath} ]; then
     cd ${BuildPath}
-    make -j
+    ninja
 fi

@@ -26,7 +26,7 @@ public:
     Renderer();
     ~Renderer();
 
-    void Begin(u32 BatchQuadCapacity = 10000);
+    void Begin(const glm::mat4& BaseTransform, u32 BatchQuadCapacity = 10000);
     void Flush();
     void End();
 

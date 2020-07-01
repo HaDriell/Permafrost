@@ -86,8 +86,7 @@ Renderer::~Renderer()
     AssertNotDrawing();
 }
 
-
-void Renderer::Begin(u32 BatchQuadCapacity)
+void Renderer::Begin(const glm::mat4& BaseTransform, u32 BatchQuadCapacity)
 {
     AssertRenderThread();
     AssertNotDrawing();
@@ -99,7 +98,7 @@ void Renderer::Begin(u32 BatchQuadCapacity)
 
     //Prepare Transformation Stack
     TransformationStack.clear();
-    TransformationStack.push_back(glm::mat4(1.0f));
+    TransformationStack.push_back(BaseTransform);
 }
 
 void Renderer::Flush()
