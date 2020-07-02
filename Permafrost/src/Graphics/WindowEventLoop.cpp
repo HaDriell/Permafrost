@@ -13,12 +13,12 @@ void OnGLFWErrorCallback(int error, const char* description)
 
 static WindowEventLoop EventLoop;
 
-WindowEventLoop& WindowEventLoop::Get()
+WindowEventLoop* WindowEventLoop::Get()
 {
-    return EventLoop;
+    return &EventLoop;
 }
 
-void WindowEventLoop::Register(std::shared_ptr<Window> WindowPtr)
+void WindowEventLoop::Register(Ref<Window> WindowPtr)
 {
     ManagedWindowsAccess.lock();
     ManagedWindows.push_back(WindowPtr);
@@ -27,7 +27,6 @@ void WindowEventLoop::Register(std::shared_ptr<Window> WindowPtr)
 
 void WindowEventLoop::ExecuteMainLoop()
 {
-    LOG_INFO("Entering Event Loop");
     if (glfwInit())
     {
         glfwSetErrorCallback(&OnGLFWErrorCallback);
@@ -37,7 +36,6 @@ void WindowEventLoop::ExecuteMainLoop()
         } while (IsAnyWindowOpen());
         glfwTerminate();
     }
-    LOG_INFO("Exiting Event Loop");
 }
 
 bool WindowEventLoop::IsAnyWindowOpen()
@@ -60,7 +58,7 @@ bool WindowEventLoop::IsAnyWindowOpen()
 
 void WindowEventLoop::UpdateManagedWindows()
 {
-    std::vector<std::shared_ptr<Window>> ClosedWindows;
+    std::vector<Ref<Window>> ClosedWindows;
 
     ManagedWindowsAccess.lock();
     for (auto Window : ManagedWindows)

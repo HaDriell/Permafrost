@@ -7,6 +7,19 @@ else
     BuildFolder="$1"
 fi
 
-BuildPath=${WorkspacePath}/${BuildFolder}
+#Check for Build Target (Any executable Project)
+if [ -z "$2"]; then
+    BuildTarget=Sandbox
+else
+    BuildTarget="$2"
+fi
 
-${BuildPath}/Sandbox/Sandbox.exe
+BuildPath="${WorkspacePath}/${BuildFolder}/${BuildTarget}"
+ProjectPath="${WorkspacePath}/${BuildTarget}"
+
+if [ -d "${ProjectPath}/res" ]; then
+    ln -fs "${ProjectPath}/res" "${BuildPath}/res"
+fi
+
+cd ${BuildPath}
+./${BuildTarget}

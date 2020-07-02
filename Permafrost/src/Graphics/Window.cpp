@@ -6,7 +6,7 @@
 #include "Permafrost/Core/Log.h"
 #include "Permafrost/Graphics/WindowEventLoop.h"
 
-static void APIENTRY OnOpenGLDebugMessage(GLenum Source, GLenum Type, u32 id, GLenum Severity, GLsizei Length, const char* Message, const void* UserParam)
+void APIENTRY OnOpenGLDebugMessage(GLenum Source, GLenum Type, u32 id, GLenum Severity, GLsizei Length, const char* Message, const void* UserParam)
 {
     // ignore non-significant error/warning codes
     // if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
@@ -51,11 +51,11 @@ static void APIENTRY OnOpenGLDebugMessage(GLenum Source, GLenum Type, u32 id, GL
 }
 
 
-std::shared_ptr<Window> Window::Open(const WindowProperties& Properties)
+Ref<Window> Window::Open(const WindowProperties& Properties)
 {
-    std::shared_ptr<Window> WindowPtr = std::make_shared<Window>();
+    Ref<Window> WindowPtr = CreateRef<Window>();
     WindowPtr->Properties = Properties;
-    WindowEventLoop::Get().Register(WindowPtr);
+    WindowEventLoop::Get()->Register(WindowPtr);
     return WindowPtr;
 }
 

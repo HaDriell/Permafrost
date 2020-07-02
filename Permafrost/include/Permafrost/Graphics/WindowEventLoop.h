@@ -9,7 +9,7 @@
 class WindowEventLoop
 {
 public:
-    static WindowEventLoop& Get();
+    static WindowEventLoop* Get();
 public:
     void Register(Ref<Window> WindowPtr);
 

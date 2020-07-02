@@ -1,5 +1,6 @@
 WorkspacePath=`pwd`
 
+
 #Check for Build Profile (Debug, Release)
 if [ -z "$1"]; then
     BuildType=Debug
@@ -22,4 +23,10 @@ cd ${BuildPath}
 export CC=gcc
 export CXX=g++
 
-cmake -DWIN32=1 -DCMAKE_BUILD_TYPE=${BuildType} -G "Ninja" ${WorkspacePath}
+CMAKE_ARGS="${CMAKE_ARGS} -DWIN32=1"
+CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_BUILD_TYPE=${BuildType}"
+CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_LINK_EXECUTABLE=\"<CMAKE_LINKER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>\""
+CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_C_COMPILER=gcc"
+CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_COMPILER=g++"
+
+cmake ${CMAKE_ARGS} -G "Ninja" ${WorkspacePath}

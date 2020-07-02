@@ -9,24 +9,6 @@
 #include <Permafrost/Graphics/WindowEventLoop.h>
 #include <Permafrost/Core/Reflection/Reflection.h>
 
-void Configure(int argc, char** argv)
-{
-	LOG_INFO("ARG[0] = {0}", argv[0]);
-	spdlog::set_level(spdlog::level::level_enum::debug);
-
-	if (!Configuration::Get()->Load("Permafrost.properties"))
-	{
-		LOG_WARNING("'Permafrost.properties' file not present or invalid !");
-		Configuration::Get()->Save("Permafrost.properties");
-	}
-	
-	if (!Configuration::Get()->Parse(argc, argv))
-	{
-		LOG_CRITICAL("Invalid input parameters, aborting Permafrost.");
-		std::exit(1);
-	}
-}
-
 void OnWindowRender()
 {
 	//Clear Frame
@@ -42,6 +24,4 @@ void Main()
 {
 	auto MyWindow = Window::Open();
 	MyWindow->OnRender.Bind(&OnWindowRender);
-
-    WindowEventLoop::Get().ExecuteMainLoop();
 }

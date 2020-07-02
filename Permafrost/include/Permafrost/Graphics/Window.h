@@ -1,8 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <string>
-
+#include "Permafrost/Core/CommonTypes.h"
 #include "Permafrost/Core/UserInput.h"
 
 struct WindowProperties
