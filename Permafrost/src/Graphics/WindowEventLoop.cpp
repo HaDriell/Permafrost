@@ -6,16 +6,20 @@
 
 #include "Permafrost/Core/Log.h"
 
+Scope<WindowEventLoop> WindowEventLoop::Instance;
+
 void OnGLFWErrorCallback(int error, const char* description)
 {
     LOG_ERROR("[GLFW Error {0}] {1}", error, description);
 }
 
-static WindowEventLoop EventLoop;
-
-WindowEventLoop* WindowEventLoop::Get()
+Scope<WindowEventLoop>& WindowEventLoop::Get()
 {
-    return &EventLoop;
+    if (!Instance)
+    {
+        Instance.reset(new WindowEventLoop());
+    }
+    return Instance;
 }
 
 void WindowEventLoop::Register(Ref<Window> WindowPtr)

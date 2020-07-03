@@ -1,4 +1,4 @@
-#include "Permafrost/Core/Reflection/TypeRegistry.h"
+#include "Permafrost/Reflection/TypeRegistry.h"
 
 #include "Permafrost/Core/Log.h"
 

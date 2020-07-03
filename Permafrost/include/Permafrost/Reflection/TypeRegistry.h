@@ -2,7 +2,7 @@
 
 #include "Permafrost/Core/CommonTypes.h"
 #include "Permafrost/Core/Hash.h"
-#include "Permafrost/Core/Reflection/TypeDefinition.h"
+#include "Permafrost/Reflection/TypeDefinition.h"
 
 class TypeRegistry
 {

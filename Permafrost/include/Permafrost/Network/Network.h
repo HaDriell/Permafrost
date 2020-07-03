@@ -5,7 +5,6 @@
 #include <WinSock2.h>
 
 #include "Permafrost/Core/CommonTypes.h"
-#include "Permafrost/Network/Socket.h"
 
 
 class Network

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Permafrost/Core/Reflection/TypeDefinition.h"
-#include "Permafrost/Core/Reflection/TypeRegistry.h"
+#include "Permafrost/Reflection/TypeDefinition.h"
+#include "Permafrost/Reflection/TypeRegistry.h"
 
 #define REFLECT(Type)                   \
 private:                                \

@@ -7,7 +7,6 @@
 #include <Permafrost/Graphics/RenderUtil.h>
 #include <Permafrost/Graphics/Window.h>
 #include <Permafrost/Graphics/WindowEventLoop.h>
-#include <Permafrost/Core/Reflection/Reflection.h>
 
 void OnWindowRender()
 {
