@@ -3,14 +3,6 @@
 #include "Permafrost/Core/Log.h"
 #include "Permafrost/Network/Network.h"
 
-#include <WinSock2.h>
-#pragma comment(lib, "Ws2_32.lib")
-
-Socket::Socket()
-    : Handle(nullptr)
-{
-}
-
 void Socket::Wrap(void* HandleToWrap)
 {
     assert(Handle == nullptr);

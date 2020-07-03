@@ -2,7 +2,7 @@
 
 Scope<Options> Configuration::Instance;
 
-Scope<Options>& Configuration::Get()
+Scope<Options>* Configuration::Get()
 {
     if (!Instance)
     {

@@ -1,12 +1,12 @@
 #pragma once
 
+#include <WinSock2.h>
+
 #include "Permafrost/Core/CommonTypes.h"
 
 class Socket
 {
 public:
-    Socket();
-    
     void Wrap(void* HandleToWrap);
     void Bind(const std::string& LocalAddress, u32 Port);
     void Connect(const std::string& RemoteAddres, u32 Port);
@@ -24,8 +24,8 @@ public:
 private:
     void UpdateSocketInfo();
 
+    SOCKET      Handle;
     bool        ServerSocket;
-    void*       Handle;
     std::string LocalAddress;
     u32         LocalPort;
     std::string RemoteAddress;
