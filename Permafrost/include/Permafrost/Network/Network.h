@@ -19,15 +19,15 @@ private:
     void Listen();
 
 private:
+    std::mutex          NetworkWorkerAccess;
     std::thread         NetworkWorker;
 
     std::mutex          SocketsAccess;
     std::vector<SOCKET> ServerSockets;
     std::vector<SOCKET> ClientSockets;
+    fd_set              Selector;
 
     WSADATA WSAData;
-
-
 
 //Singleton Pattern
     static Scope<Network>& Get();
